@@ -1,0 +1,93 @@
+﻿@page "/libros-radzen"
+@using BlazorCrudLibros.Models
+@using BlazorCrudLibros.Repositorio
+@using Radzen
+@inject IRepositorio Repositorio
+
+<h1>CRUD Blazor Server y MSSQLLocalDB</h1>
+
+
+<RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="4" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                Data="@listaLibros" TItem="Libro" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+    <Columns>        
+        <RadzenDataGridColumn TItem="Libro" Property="Id" Title="IDe" Frozen="true" Width="10px" />
+        <RadzenDataGridColumn TItem="Libro" Property="Titulo" Title="Titulo" Width="160px" />
+        <RadzenDataGridColumn TItem="Libro" Property="Descripcion" Title="Descripción" Width="160px" />
+        <RadzenDataGridColumn TItem="Libro" Property="Autor" Title="Autor" Width="120px" />
+        <RadzenDataGridColumn TItem="Libro" Property="Paginas" Title="Páginas" Width="160px" />
+        <RadzenDataGridColumn TItem="Libro" Property="Precio" Title="Precio" Width="160px" />
+        <RadzenDataGridColumn TItem="Libro" Property="FechaCreacion" Title="FechaCreación" Width="200px" />
+     
+        <RadzenGridColumn TItem="Libro" Property="Id">
+            <Template Context="data">
+                <a href="editar-libro/@data.Id" class="btn btn-success btn-sm"><span class="oi oi-plus" aria-hidden="true"></span> Editar</a>
+                <button @onclick="( () => BorrarLibro(data.Id))" class="btn btn-danger btn-sm"><span class="oi oi-delete"></span> Borrar</button>
+            </Template>
+        </RadzenGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+
+
+
+
+@* <div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-dark">Lista de Libros</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Descripción</th>
+                    <th>Autor</th>
+                    <th>Páginas</th>
+                    <th>Precio</th>
+                    <th>Fecha de Creación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var libro in listaLibros)
+                {
+                    <tr>
+                        <td>@libro.Id</td>
+                        <td>@libro.Titulo</td>
+                        <td>@libro.Descripcion</td>
+                        <td>@libro.Autor</td>
+                        <td>@libro.Paginas</td>
+                        <td>@libro.Precio</td>
+                        <td>@libro.FechaCreacion</td>
+                        <td>
+                            <a href="editar-libro/@libro.Id" class="btn btn-success btn-sm"><span class="oi oi-plus" aria-hidden="true"></span> Editar</a>
+                            <button @onclick="( () => BorrarLibro(libro.Id))" class="btn btn-danger btn-sm"><span class="oi oi-delete"></span> Borrar</button>
+                        </td>
+                    </tr>
+                }   
+
+            </tbody>
+        </table>
+    </div>
+</div> *@
+
+@code {
+    private List<Libro> listaLibros = new List<Libro>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaLibros = await Repositorio.GetLibros();
+    }
+
+    private async Task BorrarLibro(int libroId)
+    {
+        await Repositorio.EliminarLibro(libroId);
+
+        listaLibros = await Repositorio.GetLibros();
+    }
+}
